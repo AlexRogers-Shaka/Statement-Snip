@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statement Snip</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--ink:#141820;--muted:#667085;--line:#e3e6eb;--accent:#107c41;--accent-ink:#fff;--soft:#e8f4ed;--low:#fff3cf;--low-line:#e5a50a;--tot:#f1f3f6;--warn-bg:#fff4ed;--warn:#b93815}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1b1b;--card:#252525;--ink:#eee;--muted:#a3a3a3;--line:#3a3a3a;--accent:#4cc38a;--accent-ink:#0b130e;--soft:#1f3328;--low:#3b300e;--low-line:#d59f1b;--tot:#2c2c2c;--warn-bg:#3a1d12;--warn:#ffab85}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+.wrap{padding:12px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+h2{font-size:13.5px;margin:0;display:flex;align-items:center;gap:7px}
+.n{width:20px;height:20px;border-radius:50%;background:var(--soft);color:var(--accent);display:inline-grid;place-items:center;font-size:11px;font-weight:700}
+.local{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.local i{width:7px;height:7px;border-radius:50%;background:#12805c;display:inline-block}
+.btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 11px;border-radius:7px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:4px 8px;font-size:12px}
+.btn.grow{flex:1}
+.stage{border:1.5px dashed var(--line);border-radius:9px;min-height:150px;display:flex;background:var(--bg);overflow:hidden;outline:none}
+.stage:focus{border-color:var(--accent)}
+.stage.drag{border-color:var(--accent);background:var(--soft)}
+.stage.has-img{border-style:solid}
+#stageInner{width:100%;display:flex;align-items:center;justify-content:center}
+#view{display:block;max-width:100%;cursor:crosshair;touch-action:none}
+.empty{text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:4px;padding:16px;font-size:12.5px}
+.empty strong{color:var(--ink);font-size:13.5px}
+.muted{color:var(--muted);font-size:12px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer}
+.progress{display:flex;align-items:center;gap:8px}
+.bar{flex:1;height:5px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+#progText{font-size:12px;color:var(--muted)}
+.tabs{display:flex;gap:5px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:7px;padding:3px 9px;font:inherit;font-size:12px;cursor:pointer}
+.tab.on{background:var(--soft);color:var(--accent);border-color:var(--accent);font-weight:600}
+.sheetbar{display:flex;gap:6px;align-items:center}
+.sheetbar input{flex:1;min-width:0;font:inherit;font-weight:600;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:var(--card);color:var(--ink)}
+.tablewrap{overflow:auto;max-height:46vh;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{border-bottom:1px solid var(--line);padding:4px 6px;white-space:nowrap}
+thead th{position:sticky;top:0;background:var(--card);z-index:1;text-align:right;font-weight:600;color:var(--muted)}
+thead th:nth-child(2){text-align:left}
+.th{display:flex;align-items:center;justify-content:flex-end;gap:2px}
+thead th:nth-child(2) .th{justify-content:flex-start}
+[contenteditable]{outline:none;border-radius:3px}
+[contenteditable]:focus{box-shadow:0 0 0 2px var(--accent) inset;background:var(--soft)}
+td.lbl{min-width:140px;white-space:normal}
+td.num{text-align:right;font-variant-numeric:tabular-nums;min-width:70px}
+td.low{background:var(--low);box-shadow:inset 0 -2px 0 var(--low-line)}
+tr.t-total td{background:var(--tot);font-weight:700}
+tr.t-total td.low{background:var(--low)}
+tr.t-heading td.lbl{font-weight:700;padding-top:8px}
+.tcol{width:24px;text-align:center}
+.act{width:40px;text-align:right;opacity:.3}
+tr:hover .act{opacity:1}
+.x,.ins,.type{appearance:none;border:0;background:none;color:var(--muted);cursor:pointer;font:inherit;font-size:12px;padding:1px 4px;border-radius:4px}
+.x:hover{color:var(--warn);background:var(--warn-bg)}
+.ins:hover,.type:hover{color:var(--accent);background:var(--soft)}
+.type{font-weight:700}
+.legend{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:11.5px;flex-wrap:wrap}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px}
+.sw.low{background:var(--low);box-shadow:inset 0 -2px 0 var(--low-line)}
+.sw.tot{background:var(--tot);border:1px solid var(--line);margin-left:6px}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.fld textarea{font:inherit;font-size:12.5px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:6px 8px;resize:vertical}
+.warn{background:var(--warn-bg);color:var(--warn);border-radius:7px;padding:7px 10px;font-size:12px}
+.opts{display:flex;flex-direction:column;gap:5px}
+.toast{position:fixed;left:10px;right:10px;bottom:12px;background:var(--ink);color:var(--bg);padding:9px 12px;border-radius:8px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:9}
+kbd{font:inherit;font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--card)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="local"><i></i>Reads images on this computer. Nothing is uploaded or saved.</div>
+  <div id="envNote" class="warn" hidden>Open this from the Statement Snip button in Excel to insert into your workbook.</div>
+
+  <section class="card">
+    <h2><span class="n">1</span>Capture</h2>
+    <div id="stage" class="stage" tabindex="0"><div id="stageInner">
+      <div class="empty" id="dropHint">
+        <strong>Click here, then paste</strong>
+        <span>Snip with <kbd>Win</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> (Mac: <kbd>Cmd</kbd>+<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd>), then <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>V</kbd></span>
+        <span>Copied PDF text pastes too, and is more accurate.</span>
+      </div>
+      <canvas id="view" hidden></canvas>
+    </div></div>
+    <div class="btns">
+      <button id="pasteBtn" class="btn sm">Paste</button>
+      <label class="btn sm">Open image<input type="file" id="file" accept="image/*" hidden></label>
+      <span id="selHint" class="muted">Drag a box to read part of it.</span>
+    </div>
+    <div class="btns">
+      <label class="chk"><input type="checkbox" id="append"> Add to current table</label>
+      <button id="readBtn" class="btn primary" style="margin-left:auto" disabled>Read</button>
+    </div>
+    <div class="progress" id="prog" hidden><div class="bar"><i id="progBar"></i></div><span id="progText"></span></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">2</span>Check</h2>
+    <div id="tabs" class="tabs"></div>
+    <div class="sheetbar" id="sheetbar" hidden>
+      <input id="sheetName" aria-label="Table name">
+      <button class="btn sm" id="delSheet">Delete</button>
+    </div>
+    <span id="summary" class="muted"></span>
+    <div class="tablewrap" id="tablewrap" hidden><table id="tbl"></table></div>
+    <div class="muted" id="tblEmpty">Each snip becomes an editable table here.</div>
+    <div id="tblTools" hidden class="btns">
+      <button class="btn sm" id="addRow">+ Row</button>
+      <button class="btn sm" id="addCol">+ Column</button>
+    </div>
+    <div class="legend" id="legend" hidden><i class="sw low"></i>check, then Enter <i class="sw tot"></i>total</div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">3</span>Anonymise &amp; insert</h2>
+    <label class="fld"><span>Names to strip, one per line (become [Client])</span>
+      <textarea id="redact" rows="2" placeholder="e.g. Smith Holdings Pty Ltd" autocomplete="off" spellcheck="false"></textarea></label>
+    <div id="warn" class="warn" hidden></div>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" id="brackets" checked> (1,234) means negative</label>
+      <label class="chk"><input type="checkbox" id="typeCol" checked> Add a Type column (total / heading)</label>
+      <label class="chk"><input type="checkbox" id="headers" checked> Include the header row</label>
+    </div>
+    <div class="btns">
+      <button id="insSel" class="btn primary grow" disabled>Insert at selected cell</button>
+      <button id="insNew" class="btn grow" disabled>Insert as new sheet</button>
+    </div>
+  </section>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+// PARSER-START
+const HDR_LABEL = /^(notes?|\$|aud|consolidated|accounts?|description|particulars|line items?|items?)$/i;
+const YEAR4 = /^(19|20)\d{2}$/;
+const YEARISH = /^(FY|CY|YTD|YE)?['’]?((19|20)\d{2}|\d{2})$/i;
+
+function numInfo(raw){
+  let s = String(raw).trim().replace(/[$€£¥]/g,'').replace(/\s+/g,'').replace(/−/g,'-');
+  if (!s || /^[.\_…:|,;'"`~*=]+$/.test(s)) return {skip:true};
+  if (/^[-–—]+$/.test(s)) return {text:'-'};
+  let low = false;
+  if (/\d/.test(s) && /^[(\-]?[\dOoIl|SB,.]+\)?%?$/.test(s) && /[OoIl|SB]/.test(s) && (s.match(/\d/g)||[]).length >= 2) { s = s.replace(/[Oo]/g,'0').replace(/[Il|]/g,'1').replace(/S/g,'5').replace(/B/g,'8'); low = true; }
+  if (!/^[(\-]?(\d[\d,]*(\.\d+)?|\.\d+)\)?%?$/.test(s)) return null;
+  if (/^[(\-]?\d{1,3}(\.\d{3})+\)?$/.test(s)) { s = s.replace(/\./g,','); low = true; }
+  else if (/^[(\-]?\d{1,3}(,\d{3})*,\d{2}\)?$/.test(s)) low = true;
+  else if (s.includes(',') && !/^[(\-]?\d{1,3}(,\d{3})*(\.\d+)?\)?%?$/.test(s)) low = true;
+  return {text:s, low};
+}
+
+function splitRow(words){
+  const toks = [];
+  for (const w of words){ const n = numInfo(w.text); if (n && n.skip) continue; toks.push(Object.assign({}, w, {num:n})); }
+  let i = toks.length; while (i > 0 && toks[i-1].num) i--;
+  const labelToks = toks.slice(0,i), valToks = toks.slice(i);
+  return {
+    label: labelToks.map(t=>t.text).join(' ').replace(/\s+([,.:;)])/g,'$1').trim(),
+    labelToks, valToks,
+    labelLow: labelToks.some(t=>t.conf!=null && t.conf<60)
+  };
+}
+
+function groupRows(words){
+  if (!words.length) return {rows:[], medH:10};
+  const hs = words.map(w=>w.y1-w.y0).sort((a,b)=>a-b); const medH = hs[hs.length>>1] || 10;
+  const ws = [...words].sort((a,b)=>(a.y0+a.y1)-(b.y0+b.y1));
+  const rows = [];
+  for (const w of ws){
+    const yc = (w.y0+w.y1)/2, r = rows[rows.length-1];
+    if (r && Math.abs(yc-r.yc) <= medH*0.55){ r.words.push(w); r.yc = (r.yc*r.n+yc)/(r.n+1); r.n++; }
+    else rows.push({yc, n:1, words:[w]});
+  }
+  rows.forEach(r=>r.words.sort((a,b)=>a.x0-b.x0));
+  return {rows: rows.map(r=>r.words), medH};
+}
+
+function clusterX(xs, gap){
+  const s = [...xs].sort((a,b)=>a-b), cl = [];
+  for (const x of s){ const c = cl[cl.length-1]; if (c && x-c.max <= gap){ c.max=x; c.sum+=x; c.n++; } else cl.push({max:x,sum:x,n:1}); }
+  return cl.map(c=>c.sum/c.n);
+}
+
+function rowType(label, nvals){
+  if (!nvals) return 'heading';
+  if (!label || /\btotals?\b|^net\b|^nett\b|^gross (profit|margin)|^(operating )?(profit|loss|surplus|deficit)\b.*\b(before|after|for)\b|^ebitda?\b/i.test(label)) return 'total';
+  return 'line';
+}
+
+function isHeaderOcr(p){
+  return (p.valToks.length>0 && p.valToks.every(t=>YEAR4.test(t.num.text)) && (!p.label || HDR_LABEL.test(p.label)))
+    || (p.valToks.length===0 && p.labelToks.length>=2 && p.labelToks.every(t=>YEARISH.test(t.text)) && p.labelToks.some(t=>/\d{4}|^(FY|CY)/i.test(t.text)));
+}
+
+function buildFromWords(words){
+  const {rows, medH} = groupRows(words);
+  const parsed = rows.map(splitRow).filter(p=>p.label || p.valToks.length);
+  const headers = parsed.filter(isHeaderOcr), body = parsed.filter(p=>!isHeaderOcr(p));
+  const xs = []; body.forEach(p=>p.valToks.forEach(t=>xs.push(t.x1)));
+  const centers = clusterX(xs, medH*1.6);
+  const nearest = x=>{ let b=0, bd=Infinity; centers.forEach((c,i)=>{ const d=Math.abs(c-x); if (d<bd){ bd=d; b=i; } }); return b; };
+  const ncol = centers.length;
+  const cols = ['Line item', ...centers.map((_,i)=>'Col '+(i+1))];
+  for (const h of headers){
+    const toks = h.valToks.length ? h.valToks : h.labelToks;
+    toks.forEach(t=>{ if (!ncol) return; const c = nearest(t.x1); if (/^Col \d+$/.test(cols[c+1])) cols[c+1] = t.num ? t.num.text : t.text; });
+  }
+  const out = [];
+  for (const p of body){
+    const cells = [p.label, ...Array(ncol).fill('')], low = [p.labelLow, ...Array(ncol).fill(false)];
+    for (const t of p.valToks){
+      let c = nearest(t.x1);
+      if (cells[c+1] !== ''){ if (c+1<ncol && cells[c+2]==='') c = c+1; else if (c>0 && cells[c]==='') c = c-1; }
+      if (cells[c+1] !== ''){ cells[c+1] += ' '+t.num.text; low[c+1] = true; }
+      else { cells[c+1] = t.num.text; low[c+1] = !!t.num.low || (t.conf!=null && t.conf<80); }
+    }
+    out.push({cells, low, type: rowType(p.label, p.valToks.length)});
+  }
+  if (ncol >= 2 && cols[1].startsWith('Col ')){
+    const v = out.map(r=>r.cells[1]).filter(Boolean);
+    if (v.length && v.every(x=>/^\d{1,2}(\.\d)?$/.test(x))) cols[1] = 'Note';
+  }
+  return {cols, rows: out};
+}
+
+function parseText(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  const tabbed = lines.some(l=>l.includes('\t'));
+  const parsed = lines.map(l=>{
+    if (tabbed){
+      const cells = l.split('\t').map(s=>s.trim());
+      const vals = cells.slice(1).map(v=>{ if (!v) return {text:''}; const n = numInfo(v); return n && !n.skip ? n : {text:v}; });
+      while (vals.length && !vals[vals.length-1].text) vals.pop();
+      return {label: cells[0], vals, tabbed:true};
+    }
+    const p = splitRow(l.trim().split(/\s+/).map(t=>({text:t})));
+    return {label: p.label, vals: p.valToks.map(t=>t.num)};
+  });
+  const isHdr = p=>{
+    const v = p.vals.filter(x=>x.text), w = p.label ? p.label.split(/\s+/) : [];
+    return (v.length && v.every(x=>YEAR4.test(x.text)) && (!p.label || HDR_LABEL.test(p.label)))
+      || (!v.length && w.length>=2 && w.every(x=>YEARISH.test(x)) && /\d{4}|FY|CY/i.test(p.label));
+  };
+  let hdr = null; const body = [];
+  for (const p of parsed){ if (isHdr(p)){ if (!hdr) hdr = p; } else if (p.label || p.vals.length) body.push(p); }
+  const ncol = Math.max(0, ...body.map(p=>p.vals.length));
+  const cols = ['Line item', ...Array.from({length:ncol},(_,i)=>'Col '+(i+1))];
+  if (hdr){
+    const hv = hdr.vals.filter(x=>x.text).map(x=>x.text), hl = hv.length ? hv : hdr.label.split(/\s+/);
+    const off = ncol-hl.length; hl.forEach((h,i)=>{ if (off+i>=0 && off+i<ncol) cols[off+i+1] = h; });
+  }
+  const rows = body.map(p=>{
+    const cells = [p.label, ...Array(ncol).fill('')], low = [false, ...Array(ncol).fill(false)];
+    const off = p.tabbed ? 0 : ncol-p.vals.length;
+    p.vals.forEach((v,i)=>{ cells[off+i+1] = v.text; low[off+i+1] = !!v.low || (off>0 && ncol>1); });
+    return {cells, low, type: rowType(p.label, p.vals.filter(x=>x.text).length)};
+  });
+  return {cols, rows};
+}
+
+function toNumber(s, bracketsNeg){
+  if (bracketsNeg === undefined) bracketsNeg = true;
+  const t = String(s==null?'':s).trim(); if (!t) return {v:null};
+  let u = t.replace(/[$€£¥\s]/g,'').replace(/−/g,'-');
+  if (/^[-–—]+$/.test(u)) return {v:0};
+  let neg = false, pct = false;
+  if (/^\(.*\)$/.test(u) || /^\([\d.,]+%?$/.test(u) || /^[\d.,]+%?\)$/.test(u)){ u = u.replace(/[()]/g,''); neg = bracketsNeg; }
+  if (u.startsWith('-')){ neg = !neg; u = u.slice(1); }
+  if (u.endsWith('-')){ neg = true; u = u.slice(0,-1); }
+  if (u.endsWith('%')){ pct = true; u = u.slice(0,-1); }
+  if (/^(\d[\d,]*(\.\d+)?|\.\d+)$/.test(u)){
+    let v = parseFloat(u.replace(/,/g,'')); if (neg) v = -v;
+    return {v: pct ? v/100 : v, pct, dec: /\.\d/.test(u)};
+  }
+  return {text:t};
+}
+
+function guessName(rows){
+  const L = rows.map(r=>r.cells[0]).join(' ').toLowerCase();
+  if (/cash flows?|operating activities|investing activities/.test(L)) return 'Cash Flow';
+  if (/total assets|liabilit|equity|net assets/.test(L)) return 'Balance Sheet';
+  if (/revenue|sales|income|expenses|cost of/.test(L)) return 'Profit & Loss';
+  return 'Snip';
+}
+// PARSER-END
+
+const $ = s => document.querySelector(s);
+const state = {img:null, sel:null, vscale:1, sheets:[], cur:-1, worker:null, inExcel:false, armed:null};
+const TYPE_ICON = {line:'·', total:'Σ', heading:'H'};
+const TYPE_NEXT = {line:'total', total:'heading', heading:'line'};
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const cur = () => state.sheets[state.cur];
+
+let toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 4500); }
+function setProgress(p, text){ $('#prog').hidden=false; $('#progBar').style.width=Math.round(clamp(p,0,1)*100)+'%'; if (text) $('#progText').textContent=text; }
+function hideProgress(){ $('#prog').hidden=true; }
+// Office task panes don't support confirm(), so destructive actions need a second click.
+function armed(key){ if (state.armed && state.armed.key===key && Date.now()-state.armed.t < 6000){ state.armed=null; return true; } state.armed={key, t:Date.now()}; return false; }
+
+/* ---------- Office ---------- */
+if (window.Office) Office.onReady(info=>{ state.inExcel = info.host === Office.HostType.Excel; $('#envNote').hidden = state.inExcel; updateButtons(); });
+else $('#envNote').hidden = false;
+
+/* ---------- capture ---------- */
+const view = $('#view'), vctx = view.getContext('2d'), stage = $('#stage');
+
+function setImage(src){
+  const c = document.createElement('canvas');
+  c.width = src.naturalWidth || src.width; c.height = src.naturalHeight || src.height;
+  c.getContext('2d').drawImage(src,0,0);
+  state.img = c; state.sel = null;
+  $('#dropHint').hidden = true; view.hidden = false; stage.classList.add('has-img');
+  $('#readBtn').disabled = false; drawView(); updateSelHint();
+}
+function loadBlob(blob){
+  const url = URL.createObjectURL(blob), im = new Image();
+  im.onload = ()=>{ setImage(im); URL.revokeObjectURL(url); };
+  im.onerror = ()=>toast("That couldn't be opened as an image.");
+  im.src = url;
+}
+function drawView(){
+  const img = state.img; if (!img) return;
+  const maxW = $('#stageInner').clientWidth || 300;
+  const scale = Math.min(1, maxW/img.width); state.vscale = scale;
+  view.width = Math.max(1, Math.round(img.width*scale)); view.height = Math.max(1, Math.round(img.height*scale));
+  vctx.drawImage(img, 0, 0, view.width, view.height);
+  if (state.sel){
+    const {x,y,w,h} = state.sel, s = scale;
+    vctx.fillStyle = 'rgba(15,23,42,.45)';
+    vctx.beginPath(); vctx.rect(0,0,view.width,view.height); vctx.rect(x*s,y*s,w*s,h*s); vctx.fill('evenodd');
+    vctx.strokeStyle = '#107c41'; vctx.lineWidth = 2; vctx.strokeRect(x*s+1, y*s+1, Math.max(0,w*s-2), Math.max(0,h*s-2));
+  }
+}
+function updateSelHint(){ $('#selHint').textContent = state.sel ? 'Reading the box only. Click once to clear.' : 'Drag a box to read part of it.'; }
+function toSrc(e){
+  const r = view.getBoundingClientRect(), k = view.width/r.width/state.vscale;
+  return {x: clamp((e.clientX-r.left)*k, 0, state.img.width), y: clamp((e.clientY-r.top)*k, 0, state.img.height)};
+}
+let drag = null;
+view.addEventListener('pointerdown', e=>{ if (!state.img) return; drag = toSrc(e); view.setPointerCapture(e.pointerId); });
+view.addEventListener('pointermove', e=>{ if (!drag) return; const p = toSrc(e); state.sel = {x:Math.min(drag.x,p.x), y:Math.min(drag.y,p.y), w:Math.abs(p.x-drag.x), h:Math.abs(p.y-drag.y)}; drawView(); });
+view.addEventListener('pointerup', ()=>{ if (!drag) return; drag = null; if (state.sel && (state.sel.w<12 || state.sel.h<12)) state.sel = null; drawView(); updateSelHint(); });
+window.addEventListener('resize', drawView);
+stage.addEventListener('click', ()=>stage.focus());
+
+$('#file').addEventListener('change', e=>{ const f = e.target.files[0]; if (f) loadBlob(f); e.target.value=''; });
+['dragenter','dragover'].forEach(ev=>stage.addEventListener(ev, e=>{ e.preventDefault(); stage.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev=>stage.addEventListener(ev, e=>{ e.preventDefault(); stage.classList.remove('drag'); }));
+stage.addEventListener('drop', e=>{ const f = [...(e.dataTransfer.files||[])].find(f=>f.type.startsWith('image/')); if (f) loadBlob(f); });
+
+function handleText(text){ addResult(parseText(text)); toast('Read the pasted text. Check the columns line up.'); }
+document.addEventListener('paste', e=>{
+  if (e.target.closest && e.target.closest('[contenteditable],input,textarea')) return;
+  const items = (e.clipboardData && e.clipboardData.items) || [];
+  for (const it of items){ if (it.type && it.type.startsWith('image/')){ e.preventDefault(); loadBlob(it.getAsFile()); return; } }
+  const text = e.clipboardData && e.clipboardData.getData('text/plain');
+  if (text && /\d/.test(text)){ e.preventDefault(); handleText(text); }
+});
+$('#pasteBtn').addEventListener('click', async ()=>{
+  try{
+    if (!navigator.clipboard || !navigator.clipboard.read) throw 0;
+    const items = await navigator.clipboard.read();
+    for (const it of items){
+      const t = it.types.find(t=>t.startsWith('image/'));
+      if (t){ loadBlob(await it.getType(t)); return; }
+      if (it.types.includes('text/plain')){ const txt = await (await it.getType('text/plain')).text(); if (/\d/.test(txt)){ handleText(txt); return; } }
+    }
+    toast('Nothing to paste. Take a snip first.');
+  }catch(e){ stage.focus(); toast('Click the box above and press Ctrl+V (Cmd+V on Mac).'); }
+});
+
+/* ---------- OCR ---------- */
+async function getWorker(){
+  if (state.worker) return state.worker;
+  setProgress(0,'Loading reader (first time only)…');
+  const logger = m=>{ if (typeof m.progress==='number') setProgress(m.progress, m.status==='recognizing text' ? 'Reading…' : (m.status.charAt(0).toUpperCase()+m.status.slice(1))+'…'); };
+  try{ state.worker = await Tesseract.createWorker('eng', 1, {logger}); }
+  catch(e){ state.worker = await Tesseract.createWorker('eng', 1, {logger, cacheMethod:'none'}); }
+  await state.worker.setParameters({tessedit_pageseg_mode:'6', preserve_interword_spaces:'1'});
+  return state.worker;
+}
+function cropForOcr(){
+  const img = state.img, s = state.sel || {x:0, y:0, w:img.width, h:img.height};
+  let k = s.w < 1200 ? 2 : (s.w < 2000 ? 1.5 : 1); if (s.w*k > 5000) k = 5000/s.w;
+  const c = document.createElement('canvas'); c.width = Math.round(s.w*k); c.height = Math.round(s.h*k);
+  const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+  ctx.drawImage(img, s.x, s.y, s.w, s.h, 0, 0, c.width, c.height);
+  const d = ctx.getImageData(0,0,c.width,c.height), a = d.data; let sum = 0;
+  for (let i=0;i<a.length;i+=4){ const L = 0.299*a[i]+0.587*a[i+1]+0.114*a[i+2]; a[i]=a[i+1]=a[i+2]=L; sum += L; }
+  if (sum/(a.length/4) < 110) for (let i=0;i<a.length;i+=4){ a[i]=a[i+1]=a[i+2]=255-a[i]; }
+  ctx.putImageData(d,0,0);
+  return c;
+}
+function collectWords(data){
+  const out = [], push = w=>{ if (w && w.text && w.text.trim()) out.push({text:w.text, conf:w.confidence, x0:w.bbox.x0, x1:w.bbox.x1, y0:w.bbox.y0, y1:w.bbox.y1}); };
+  if (data.blocks && data.blocks.length){ for (const b of data.blocks) for (const p of (b.paragraphs||[])) for (const l of (p.lines||[])) (l.words||[]).forEach(push); }
+  else (data.words||[]).forEach(push);
+  return out;
+}
+async function readImage(){
+  if (!state.img) return;
+  if (typeof Tesseract === 'undefined'){ toast("The reader couldn't load. It needs internet the first time."); return; }
+  const btn = $('#readBtn'); btn.disabled = true;
+  try{
+    const w = await getWorker(); setProgress(0,'Reading…');
+    const {data} = await w.recognize(cropForOcr(), {}, {blocks:true, text:true});
+    addResult(buildFromWords(collectWords(data)));
+    setProgress(1,'Done'); setTimeout(hideProgress, 900);
+  }catch(err){ console.error(err); hideProgress(); toast('Reading failed: '+(err && err.message || err)); }
+  finally{ btn.disabled = false; }
+}
+$('#readBtn').addEventListener('click', readImage);
+
+/* ---------- tables ---------- */
+function addResult(res){
+  if (!res.rows.length){ toast("No rows found. Try a tighter box or a sharper, zoomed-in snip."); return; }
+  const s = cur();
+  if ($('#append').checked && s){
+    const n = Math.max(s.cols.length, res.cols.length);
+    while (s.cols.length < n){ s.cols.push(res.cols[s.cols.length] || 'Col '+s.cols.length); s.rows.forEach(r=>{ r.cells.push(''); r.low.push(false); }); }
+    res.rows.forEach(r=>{ while (r.cells.length < n){ r.cells.push(''); r.low.push(false); } s.rows.push(r); });
+  } else {
+    const base = guessName(res.rows); let name = base, k = 2;
+    while (state.sheets.some(x=>x.name===name)) name = base+' '+(k++);
+    state.sheets.push({name, cols:res.cols, rows:res.rows}); state.cur = state.sheets.length-1;
+  }
+  render();
+}
+function updateButtons(){ const has = !!cur(); $('#insSel').disabled = !(has && state.inExcel); $('#insNew').disabled = !(has && state.inExcel); }
+function render(){
+  $('#tabs').innerHTML = state.sheets.length>1 ? state.sheets.map((s,i)=>`<button class="tab${i===state.cur?' on':''}" data-tab="${i}">${esc(s.name)}</button>`).join('') : '';
+  const sh = cur(), has = !!sh;
+  ['#sheetbar','#tablewrap','#tblTools','#legend'].forEach(q=>$(q).hidden = !has); $('#tblEmpty').hidden = has;
+  updateButtons();
+  if (!has){ $('#tbl').innerHTML=''; $('#summary').textContent=''; updateWarn(); return; }
+  $('#sheetName').value = sh.name;
+  const n = sh.cols.length;
+  let h = '<thead><tr><th class="tcol"></th>';
+  sh.cols.forEach((c,i)=>{ h += `<th><div class="th"><span contenteditable data-hc="${i}">${esc(c)}</span>${i>0?`<button class="x" data-delcol="${i}" title="Delete column">×</button>`:''}</div></th>`; });
+  h += '<th></th></tr></thead><tbody>';
+  sh.rows.forEach((r,ri)=>{
+    h += `<tr class="t-${r.type}"><td class="tcol"><button class="type" data-type="${ri}" title="Row type: ${r.type} (click to change)">${TYPE_ICON[r.type]}</button></td>`;
+    for (let c=0;c<n;c++) h += `<td class="${c?'num':'lbl'}${r.low[c]?' low':''}" contenteditable data-r="${ri}" data-c="${c}">${esc(r.cells[c])}</td>`;
+    h += `<td class="act"><button class="ins" data-insrow="${ri}" title="Insert row below">+</button><button class="x" data-delrow="${ri}" title="Delete row">×</button></td></tr>`;
+  });
+  $('#tbl').innerHTML = h + '</tbody>';
+  updateSummary();
+}
+function updateSummary(){
+  const sh = cur(); if (!sh) return;
+  const lows = sh.rows.reduce((a,r)=>a + r.low.filter(Boolean).length, 0);
+  $('#summary').textContent = `${sh.rows.length} rows · ${sh.cols.length-1} value columns` + (lows ? ` · ${lows} to check` : ' · all checked');
+  updateWarn();
+}
+function updateWarn(){
+  const red = redactor(), hits = new Set();
+  for (const s of state.sheets) for (const t of [s.name, ...s.cols, ...s.rows.map(r=>r.cells[0])]){
+    const m = red(String(t||'')).match(/[^,;:()]{0,40}\b(pty\.?|ltd\.?|limited|p\/l|trust|abn|acn|tfn)\b[^,;:()]{0,20}/i);
+    if (m) hits.add(m[0].trim());
+  }
+  const w = $('#warn');
+  if (hits.size){ w.hidden = false; w.textContent = 'Possible identifying text: "' + [...hits].slice(0,3).join('", "') + '". Add it to the names to strip.'; }
+  else w.hidden = true;
+}
+const tbl = $('#tbl');
+tbl.addEventListener('input', e=>{
+  const sh = cur(), td = e.target.closest('td[data-r]');
+  if (td){ const r = sh.rows[+td.dataset.r], c = +td.dataset.c; r.cells[c] = td.textContent; if (r.low[c]){ r.low[c]=false; td.classList.remove('low'); updateSummary(); } return; }
+  const hc = e.target.closest('[data-hc]'); if (hc) sh.cols[+hc.dataset.hc] = hc.textContent;
+});
+tbl.addEventListener('keydown', e=>{
+  if (e.key !== 'Enter') return; e.preventDefault();
+  const td = e.target.closest('td[data-r]'); if (!td){ e.target.blur(); return; }
+  const r = cur().rows[+td.dataset.r], c = +td.dataset.c;
+  if (r.low[c]){ r.low[c] = false; td.classList.remove('low'); updateSummary(); }
+  const next = tbl.querySelector(`td[data-r="${+td.dataset.r+1}"][data-c="${c}"]`);
+  if (next){ next.focus(); const sel = getSelection(); sel.selectAllChildren(next); sel.collapseToEnd(); } else td.blur();
+});
+tbl.addEventListener('focusout', e=>{ if (e.target.closest('[data-hc]') || e.target.closest('td.lbl')) updateWarn(); });
+tbl.addEventListener('click', e=>{
+  const sh = cur(), b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.delcol){ const i = +b.dataset.delcol; sh.cols.splice(i,1); sh.rows.forEach(r=>{ r.cells.splice(i,1); r.low.splice(i,1); }); render(); }
+  else if (b.dataset.delrow){ sh.rows.splice(+b.dataset.delrow,1); render(); }
+  else if (b.dataset.insrow){ const n = sh.cols.length; sh.rows.splice(+b.dataset.insrow+1, 0, {cells:Array(n).fill(''), low:Array(n).fill(false), type:'line'}); render(); }
+  else if (b.dataset.type){ const r = sh.rows[+b.dataset.type]; r.type = TYPE_NEXT[r.type]; render(); }
+});
+$('#tabs').addEventListener('click', e=>{ const t = e.target.closest('[data-tab]'); if (t){ state.cur = +t.dataset.tab; render(); } });
+$('#sheetName').addEventListener('input', e=>{ const s = cur(); if (s){ s.name = e.target.value; const on = $('#tabs .tab.on'); if (on) on.textContent = s.name || ' '; } });
+$('#delSheet').addEventListener('click', ()=>{
+  if (!cur()) return;
+  if (!armed('del')){ toast('Click Delete again to remove this table.'); return; }
+  state.sheets.splice(state.cur,1); state.cur = Math.min(state.cur, state.sheets.length-1); render();
+});
+$('#addRow').addEventListener('click', ()=>{ const s = cur(), n = s.cols.length; s.rows.push({cells:Array(n).fill(''), low:Array(n).fill(false), type:'line'}); render(); tbl.querySelector('tbody tr:last-child td.lbl').focus(); });
+$('#addCol').addEventListener('click', ()=>{ const s = cur(); s.cols.push('Col '+s.cols.length); s.rows.forEach(r=>{ r.cells.push(''); r.low.push(false); }); render(); });
+
+/* ---------- anonymise & insert ---------- */
+function redactor(){
+  const terms = $('#redact').value.split(/\n/).map(s=>s.trim()).filter(s=>s.length>1).sort((a,b)=>b.length-a.length);
+  if (!terms.length) return s=>s;
+  const re = new RegExp(terms.map(escRe).join('|'), 'gi');
+  return s => typeof s === 'string' ? s.replace(re, '[Client]') : s;
+}
+$('#redact').addEventListener('input', updateWarn);
+
+// Build the grid of values plus a matching grid of number formats.
+function buildGrid(sh){
+  const red = redactor(), bneg = $('#brackets').checked, withType = $('#typeCol').checked, withHdr = $('#headers').checked;
+  const values = [], formats = [], kinds = [];
+  const push = (vals, fmts, kind)=>{ values.push(vals); formats.push(fmts); kinds.push(kind); };
+  const width = sh.cols.length + (withType ? 1 : 0);
+  if (withHdr){ const v = [...sh.cols.map(c=>red(c)), ...(withType?['Type']:[])]; push(v, v.map(()=>'@'), 'header'); }
+  for (const r of sh.rows){
+    const v = [red(r.cells[0]||'')], f = [v[0] ? '@' : 'General'];
+    for (let c=1;c<sh.cols.length;c++){
+      const raw = r.cells[c], p = toNumber(raw, bneg);
+      if (p.v != null){ v.push(p.v); f.push(p.pct ? '0.0%' : (Number.isInteger(p.v) ? '#,##0;(#,##0);"-"' : '#,##0.00;(#,##0.00);"-"')); }
+      else if (p.text != null){ v.push(red(p.text)); f.push('@'); }
+      else { v.push(''); f.push('General'); }
+    }
+    if (withType){ v.push(r.type==='line' ? '' : r.type); f.push(r.type==='line' ? 'General' : '@'); }
+    while (v.length < width){ v.push(''); f.push('General'); }
+    push(v, f, r.type);
+  }
+  return {values, formats, kinds, width};
+}
+function safeSheetName(name){ return String(name||'Sheet').replace(/[\[\]:*?\/\\']/g,' ').trim().slice(0,31) || 'Sheet'; }
+
+async function insert(mode){
+  const sh = cur(); if (!sh || !state.inExcel) return;
+  const {values, formats, kinds, width} = buildGrid(sh);
+  if (!values.length) return;
+  const btns = [$('#insSel'), $('#insNew')]; btns.forEach(b=>b.disabled = true);
+  try{
+    await Excel.run(async ctx=>{
+      let ws, start;
+      if (mode === 'new'){
+        const sheets = ctx.workbook.worksheets; sheets.load('items/name'); await ctx.sync();
+        const used = new Set(sheets.items.map(s=>s.name.toLowerCase()));
+        let name = safeSheetName(redactor()(sh.name)), base = name, i = 2;
+        while (used.has(name.toLowerCase())) name = base.slice(0,27)+' ('+(i++)+')';
+        ws = sheets.add(name); start = ws.getRange('A1');
+      } else {
+        start = ctx.workbook.getSelectedRange().getCell(0,0);
+        const target = start.getResizedRange(values.length-1, width-1);
+        target.load('values,address'); await ctx.sync();
+        const filled = target.values.some(row=>row.some(v=>v!=='' && v!=null));
+        if (filled && !armed('overwrite')){ toast(`${target.address.split('!').pop()} already has data. Click Insert again to overwrite it, or select an empty cell.`); return; }
+      }
+      const rng = start.getResizedRange(values.length-1, width-1);
+      rng.numberFormat = formats;
+      rng.values = values;
+      kinds.forEach((k,i)=>{ if (k !== 'line') rng.getRow(i).format.font.bold = true; });
+      if (mode === 'new'){
+        rng.format.autofitColumns();
+        if ($('#headers').checked && Office.context.requirements.isSetSupported('ExcelApi','1.7')) ws.freezePanes.freezeRows(1);
+        ws.activate();
+      }
+      rng.select();
+      await ctx.sync();
+      toast(mode==='new' ? 'Added as a new sheet.' : 'Inserted. Names to strip were applied.');
+    });
+  }catch(err){ console.error(err); toast('Excel could not insert: '+(err && err.message || err)); }
+  finally{ updateButtons(); }
+}
+$('#insSel').addEventListener('click', ()=>insert('sel'));
+$('#insNew').addEventListener('click', ()=>insert('new'));
+
+render();
+</script>
+</body>
+</html>
