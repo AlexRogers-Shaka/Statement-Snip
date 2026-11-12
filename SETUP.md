@@ -58,3 +58,12 @@ When I send you a new `taskpane.html`, upload it to the same GitHub repository t
 - **The button doesn't appear.** Restart Excel. On Windows, check that **Show in Menu** is ticked for the catalog.
 - **A blank panel or an error.** Open the taskpane.html address in a browser to check the site is live, and that the manifest addresses match it exactly.
 - **On a managed work computer.** IT policies often block add-ins you install yourself. Use it on your own business machine instead.
+
+## Servicing workbook mode
+
+Open a Pavilion servicing workbook and Statement Snip shows a **Servicing workbook** card:
+
+1. Fill in the Structure tab, then click **Build tabs from Structure**. One tab is created per party, and unused rows on the Servicing tab are hidden.
+2. Snip a P&L, balance sheet or tax return and click **Read**.
+3. Under **Send to workbook**, check the party, the statement and the year columns. Each line is matched to a row on the party's tab, and any unmatched line is highlighted.
+4. Click **Write to tab**. Only figures are written, never names. For a P&L, the panel checks the result against the reported net profit.

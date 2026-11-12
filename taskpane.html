@@ -7,16 +7,22 @@
 <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--ink:#141820;--muted:#667085;--line:#e3e6eb;--accent:#107c41;--accent-ink:#fff;--soft:#e8f4ed;--low:#fff3cf;--low-line:#e5a50a;--tot:#f1f3f6;--warn-bg:#fff4ed;--warn:#b93815}
-@media (prefers-color-scheme:dark){:root{--bg:#1b1b1b;--card:#252525;--ink:#eee;--muted:#a3a3a3;--line:#3a3a3a;--accent:#4cc38a;--accent-ink:#0b130e;--soft:#1f3328;--low:#3b300e;--low-line:#d59f1b;--tot:#2c2c2c;--warn-bg:#3a1d12;--warn:#ffab85}}
+:root{--bg:#f6f4f0;--card:#fff;--ink:#16202b;--muted:#5f6b78;--line:#e2dfd9;--navy:#173a53;--deep:#0d1b37;--cream:#fff9f2;--accent:#173a53;--accent-ink:#fff;--soft:#e8eef3;--low:#fff3cf;--low-line:#e5a50a;--tot:#f1f3f6;--warn-bg:#fff4ed;--warn:#b93815;--ok:#12805c}
+@media (prefers-color-scheme:dark){:root{--bg:#121820;--card:#1b232d;--ink:#e8edf2;--muted:#9aa6b2;--line:#2c3743;--accent:#8fb3d1;--accent-ink:#0d1b37;--soft:#22303d;--low:#3b300e;--low-line:#d59f1b;--tot:#222b35;--warn-bg:#3a1d12;--warn:#ffab85;--ok:#4cc38a}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+.brandbar{background:var(--navy);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.brandbar svg{flex:none}
+.brandbar .wm{font-family:Georgia,"Times New Roman",serif;letter-spacing:.06em;font-size:13px;line-height:1.1}
+.brandbar .wm small{display:block;font-family:"Segoe UI",system-ui,sans-serif;font-size:9.5px;letter-spacing:.28em;opacity:.85}
+.brandbar .app{margin-left:auto;font-size:11.5px;opacity:.85;text-align:right}
 .wrap{padding:12px;display:flex;flex-direction:column;gap:12px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
-h2{font-size:13.5px;margin:0;display:flex;align-items:center;gap:7px}
-.n{width:20px;height:20px;border-radius:50%;background:var(--soft);color:var(--accent);display:inline-grid;place-items:center;font-size:11px;font-weight:700}
+.card.feature{border-color:var(--navy);box-shadow:inset 3px 0 0 var(--navy)}
+h2{font-size:13.5px;margin:0;display:flex;align-items:center;gap:7px;font-family:Georgia,"Times New Roman",serif;color:var(--accent)}
+.n{width:20px;height:20px;border-radius:50%;background:var(--soft);color:var(--accent);display:inline-grid;place-items:center;font-size:11px;font-weight:700;font-family:"Segoe UI",system-ui,sans-serif}
 .local{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.local i{width:7px;height:7px;border-radius:50%;background:#12805c;display:inline-block}
+.local i{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 11px;border-radius:7px;font:inherit;font-weight:600;cursor:pointer}
 .btn:hover{border-color:var(--accent)}
@@ -24,7 +30,9 @@ h2{font-size:13.5px;margin:0;display:flex;align-items:center;gap:7px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.sm{padding:4px 8px;font-size:12px}
 .btn.grow{flex:1}
-.stage{border:1.5px dashed var(--line);border-radius:9px;min-height:150px;display:flex;background:var(--bg);overflow:hidden;outline:none}
+.link{appearance:none;border:0;background:none;color:var(--accent);font:inherit;font-size:12px;cursor:pointer;padding:0;text-decoration:underline}
+.stage{border:1.5px dashed var(--line);border-radius:9px;min-height:150px;display:flex;background:var(--cream);overflow:hidden;outline:none}
+@media (prefers-color-scheme:dark){.stage{background:var(--bg)}}
 .stage:focus{border-color:var(--accent)}
 .stage.drag{border-color:var(--accent);background:var(--soft)}
 .stage.has-img{border-style:solid}
@@ -43,7 +51,7 @@ h2{font-size:13.5px;margin:0;display:flex;align-items:center;gap:7px}
 .tab.on{background:var(--soft);color:var(--accent);border-color:var(--accent);font-weight:600}
 .sheetbar{display:flex;gap:6px;align-items:center}
 .sheetbar input{flex:1;min-width:0;font:inherit;font-weight:600;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:var(--card);color:var(--ink)}
-.tablewrap{overflow:auto;max-height:46vh;border:1px solid var(--line);border-radius:8px}
+.tablewrap{overflow:auto;max-height:42vh;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:12px}
 th,td{border-bottom:1px solid var(--line);padding:4px 6px;white-space:nowrap}
 thead th{position:sticky;top:0;background:var(--card);z-index:1;text-align:right;font-weight:600;color:var(--muted)}
@@ -71,16 +79,57 @@ tr:hover .act{opacity:1}
 .sw.tot{background:var(--tot);border:1px solid var(--line);margin-left:6px}
 .fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
 .fld textarea{font:inherit;font-size:12.5px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:6px 8px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+select{font:inherit;font-size:12.5px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:7px;padding:5px 6px;width:100%;min-width:0}
 .warn{background:var(--warn-bg);color:var(--warn);border-radius:7px;padding:7px 10px;font-size:12px}
+.okmsg{background:#e9f7f0;color:var(--ok);border-radius:7px;padding:7px 10px;font-size:12px}
+@media (prefers-color-scheme:dark){.okmsg{background:#163327}}
 .opts{display:flex;flex-direction:column;gap:5px}
-.toast{position:fixed;left:10px;right:10px;bottom:12px;background:var(--ink);color:var(--bg);padding:9px 12px;border-radius:8px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:9}
+.parties{display:flex;flex-direction:column;gap:3px;font-size:12px}
+.parties div{display:flex;justify-content:space-between;gap:8px}
+.parties .b{color:var(--ok);font-weight:600}
+.parties .nb{color:#b45309;font-weight:600}
+.yrs{display:grid;grid-template-columns:auto 1fr;gap:6px 8px;align-items:center;font-size:12px}
+.maptbl td{padding:3px 4px;vertical-align:middle}
+.maptbl td.lab{white-space:normal;max-width:130px}
+.maptbl td.val{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.maptbl tr.skip td.lab,.maptbl tr.skip td.val{opacity:.5}
+.maptbl tr.need td{background:var(--low)}
+.maptbl select{padding:3px 4px;font-size:11.5px}
+.totals{font-size:12px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.totals div{display:flex;justify-content:space-between;padding:3px 8px;border-bottom:1px solid var(--line)}
+.totals div:last-child{border-bottom:0}
+.totals span:last-child{font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:10px;right:10px;bottom:12px;background:var(--deep);color:#fff;padding:9px 12px;border-radius:8px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:9}
 kbd{font:inherit;font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 4px;background:var(--card)}
+details summary{cursor:pointer;font-size:12px;color:var(--accent);font-weight:600}
 </style>
 </head>
 <body>
+<div class="brandbar">
+  <svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M50 8 L8 38 H92 Z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="miter"/>
+    <rect x="8" y="43" width="84" height="7" fill="#fff"/>
+    <rect x="16" y="55" width="10" height="28" fill="#fff"/><rect x="36" y="55" width="10" height="28" fill="#fff"/>
+    <rect x="54" y="55" width="10" height="28" fill="#fff"/><rect x="74" y="55" width="10" height="28" fill="#fff"/>
+    <rect x="8" y="87" width="84" height="7" fill="#fff"/>
+  </svg>
+  <div class="wm">PAVILION<small>FINANCE</small></div>
+  <div class="app">Statement Snip</div>
+</div>
 <div class="wrap">
   <div class="local"><i></i>Reads images on this computer. Nothing is uploaded or saved.</div>
-  <div id="envNote" class="warn" hidden>Open this from the Statement Snip button in Excel to insert into your workbook.</div>
+  <div id="envNote" class="warn" hidden>Open this from the Statement Snip button in Excel to write into your workbook.</div>
+
+  <section class="card feature" id="svCard" hidden>
+    <h2>Servicing workbook</h2>
+    <div class="parties" id="svParties"></div>
+    <div class="btns">
+      <button id="svBuild" class="btn primary">Build tabs from Structure</button>
+      <button id="svRefresh" class="link">Refresh</button>
+    </div>
+    <div id="svMsg" class="muted">Fill in the Structure tab, then build a tab for each party.</div>
+  </section>
 
   <section class="card">
     <h2><span class="n">1</span>Capture</h2>
@@ -121,20 +170,41 @@ kbd{font:inherit;font-size:11px;border:1px solid var(--line);border-bottom-width
     <div class="legend" id="legend" hidden><i class="sw low"></i>check, then Enter <i class="sw tot"></i>total</div>
   </section>
 
+  <section class="card feature" id="sendCard" hidden>
+    <h2><span class="n">3</span>Send to workbook</h2>
+    <div class="row2">
+      <label class="fld"><span>Party</span><select id="svParty"></select></label>
+      <label class="fld"><span>Statement</span><select id="svKind">
+        <option value="pl">Profit &amp; loss</option><option value="bs">Balance sheet</option><option value="tax">Tax return</option>
+      </select></label>
+    </div>
+    <div class="yrs" id="svYears"></div>
+    <div class="muted">Each line is matched to a row on the party's tab. Change any match with its drop-down. Totals are skipped so nothing is counted twice. Only figures are written, never names.</div>
+    <div class="tablewrap"><table class="maptbl" id="svMap"></table></div>
+    <div class="totals" id="svTotals"></div>
+    <label class="chk"><input type="checkbox" id="svAdd"> Add to figures already on the tab (multi-page statements)</label>
+    <button id="svWrite" class="btn primary">Write to tab</button>
+    <div id="svResult"></div>
+  </section>
+
   <section class="card">
-    <h2><span class="n">3</span>Anonymise &amp; insert</h2>
-    <label class="fld"><span>Names to strip, one per line (become [Client])</span>
-      <textarea id="redact" rows="2" placeholder="e.g. Smith Holdings Pty Ltd" autocomplete="off" spellcheck="false"></textarea></label>
-    <div id="warn" class="warn" hidden></div>
-    <div class="opts">
-      <label class="chk"><input type="checkbox" id="brackets" checked> (1,234) means negative</label>
-      <label class="chk"><input type="checkbox" id="typeCol" checked> Add a Type column (total / heading)</label>
-      <label class="chk"><input type="checkbox" id="headers" checked> Include the header row</label>
-    </div>
-    <div class="btns">
-      <button id="insSel" class="btn primary grow" disabled>Insert at selected cell</button>
-      <button id="insNew" class="btn grow" disabled>Insert as new sheet</button>
-    </div>
+    <details id="plainCard">
+      <summary>Insert as a plain table instead</summary>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+        <label class="fld"><span>Names to strip, one per line (become [Client])</span>
+          <textarea id="redact" rows="2" placeholder="e.g. Smith Holdings Pty Ltd" autocomplete="off" spellcheck="false"></textarea></label>
+        <div id="warn" class="warn" hidden></div>
+        <div class="opts">
+          <label class="chk"><input type="checkbox" id="brackets" checked> (1,234) means negative</label>
+          <label class="chk"><input type="checkbox" id="typeCol" checked> Add a Type column (total / heading)</label>
+          <label class="chk"><input type="checkbox" id="headers" checked> Include the header row</label>
+        </div>
+        <div class="btns">
+          <button id="insSel" class="btn primary grow" disabled>Insert at selected cell</button>
+          <button id="insNew" class="btn grow" disabled>Insert as new sheet</button>
+        </div>
+      </div>
+    </details>
   </section>
 </div>
 <div id="toast" class="toast" hidden></div>
@@ -293,29 +363,233 @@ function guessName(rows){
 }
 // PARSER-END
 
+// MAPPER-START
+// Matches snipped statement lines to rows on the servicing workbook's party tabs.
+// Layout must match build2.py.
+const LAYOUT = {structFirst:7, n:15, servFirst:6, imFirst:59, imBlock:12, liabFirst:7, liabLast:86,
+  systemSheets:['Cover','Guide','Assumptions','Structure','Entity template','Person template','Liabilities','Servicing']};
+
+const TARGETS = {
+  pl: [[7,'Revenue'],[8,'Cost of goods sold'],[10,'Other income'],[11,'Operating expenses'],[13,'Depreciation & amortisation'],
+       [15,'Interest expense'],[17,'Reported net profit before tax'],[25,'Income tax paid']],
+  bs: [[30,'Cash'],[31,'Trade debtors'],[32,'Inventory / WIP'],[33,'Other current assets'],[35,'Property, plant & equipment'],
+       [36,'Loans to related parties'],[37,'Other non-current assets'],[39,'Trade creditors'],[40,'Other current liabilities'],
+       [41,'Current borrowings'],[43,'Non-current borrowings'],[44,'Loans from related parties'],[45,'Other non-current liabilities']],
+  tax: [[7,'Item 1 Salary or wages'],[8,'Item 2 Allowances, director\'s fees'],[9,'Item 10 Gross interest'],[10,'Item 11 Dividends'],
+        [11,'Item 13 Distributions'],[13,'Item 15/P8 Business income'],[14,'Item 21 Gross rent'],[15,'Item 21 Rental interest'],
+        [16,'Item 21 Capital works'],[17,'Item 21 Other rental deductions'],[19,'Other income'],[20,'Taxable income'],[21,'Tax payable / Medicare levy']],
+};
+const COST_ROWS = new Set([8,11,13,15,25]);
+const INCOME_ROWS = new Set([7,10,17]);
+const LIAB_ROWS = new Set([39,40,41,43,44,45]);
+
+const RX = {
+  total: /^(total|gross profit|net (profit|loss|income|surplus|deficit|assets|liabilities)|ebitda|ebit\b|operating profit|profit (before|after)|(profit|loss) for the|total comprehensive)/i,
+  npbt: /^(net )?(operating )?(profit|loss|surplus|income)( ?\/ ?\(?(loss|deficit)\)?)?\s*(before|pre)[- ]?(income )?tax|^net (profit|loss|surplus|income)( ?\/ ?\(?(loss|deficit)\)?)?$/i,
+  after: /after (income )?tax/i,
+};
+
+function plSection(label){
+  const s = label.toLowerCase();
+  if (/cost of (sales|goods)|direct costs|^less:? ?cost/.test(s)) return 'cogs';
+  if (/other income|non[- ]operating income/.test(s)) return 'other';
+  if (/expense|overhead|outgoings/.test(s)) return 'expense';
+  if (/^(trading |operating )?(income|revenue|sales|turnover)\b/.test(s)) return 'income';
+  return null;
+}
+function mapPL(label, section){
+  const s = label.toLowerCase();
+  if (/income tax|tax expense/.test(s)) return {row:25};
+  if (/depreciation|amorti[sz]/.test(s)) return {row:13};
+  if (/interest|borrowing costs|finance (costs|charges)/.test(s)){
+    if (section==='income' || section==='other' || /received|income|earned|revenue/.test(s)) return {row:10};
+    return {row:15};
+  }
+  if (section==='cogs' || /cost of (sales|goods)|purchases|opening (stock|inventory)|closing (stock|inventory)|direct (costs?|labou?r|wages|materials)|subcontract/.test(s)){
+    return {row:8, neg: /closing (stock|inventory)/.test(s)};
+  }
+  if (section==='income'){
+    if (/other income|dividend|gain|profit on (sale|disposal)|grant|government|subsidy|jobkeeper|cash ?flow boost|insurance (recover|claim|proceeds)|rent(al)? (received|income)|sundry|discount received/.test(s)) return {row:10};
+    return {row:7};
+  }
+  if (section==='other') return {row:10};
+  if (section==='expense') return {row:11};
+  if (/sales|revenue|turnover|fees (income|received)|contract income|commission income/.test(s)) return {row:7};
+  if (/other income|dividend|grant|gain on/.test(s)) return {row:10};
+  return {row:null, why:'No section heading found – choose a row'};
+}
+
+function bsSection(label){
+  const s = label.toLowerCase();
+  if (/non[- ]?current assets|fixed assets|long[- ]term assets/.test(s)) return 'nca';
+  if (/current assets/.test(s)) return 'ca';
+  if (/non[- ]?current liabilities|long[- ]term liabilities/.test(s)) return 'ncl';
+  if (/current liabilities/.test(s)) return 'cl';
+  if (/equity|shareholders.? funds|beneficiar(y|ies).? funds|members.? funds|partners.? funds|capital account|^capital$/.test(s)) return 'eq';
+  if (/^assets$/.test(s)) return 'a';
+  if (/^liabilities$/.test(s)) return 'l';
+  return null;
+}
+const RELATED = /(loan|advance|account|amount).*(director|shareholder|related|beneficiar|unitholder|associat|partner|member|trust\b|family|div(ision)? ?7a)|(director|shareholder|beneficiar|unitholder|related part|associated entit).*(loan|account|advance)|unpaid present entitlement|\bupe\b/i;
+const BORROW = /loan|borrowing|hire purchase|chattel|equipment finance|lease liabilit|finance lease|overdraft|credit card|mortgage|bank bill|facility|line of credit|insurance premium funding/i;
+const TAXPROV = /gst|\bbas\b|payg|\bato\b|tax|superannuation|super payable|accru|provision|wages payable|deposit|unearned|in advance|deferred revenue|annual leave|long service/i;
+const PPE = /plant|equipment|vehicle|motor|land|building|property|furniture|fixtures|fittings|leasehold|improvement|machinery|computer|office equipment|tools|right[- ]of[- ]use|accumulated depreciation|less:? ?(accumulated )?depreciation|written down|at cost/i;
+function mapBS(label, section){
+  const s = label.toLowerCase();
+  if (section==='eq') return {row:null, skip:true, why:'Equity – not needed'};
+  const asset = section==='ca' || section==='nca' || section==='a';
+  const liab = section==='cl' || section==='ncl' || section==='l';
+  if (asset){
+    if (RELATED.test(s)) return {row:36};
+    if (/cash|bank|cheque|savings|term deposit|petty|at call/.test(s) && !/loan/.test(s)) return {row:30};
+    if (/debtor|receivable/.test(s)) return {row:31};
+    if (/stock|inventor|work in progress|\bwip\b/.test(s)) return {row:32};
+    if (PPE.test(s)) return {row:35, neg: /accumulated|less|provision for depreciation/.test(s)};
+    if (section==='ca') return {row:33};
+    if (section==='nca') return {row:37};
+    return {row:null, why:'Choose current or non-current'};
+  }
+  if (liab){
+    if (RELATED.test(s)) return {row:44};
+    if (TAXPROV.test(s)) return {row: section==='ncl' ? 45 : 40};
+    if (/creditor|payable|trade accounts/.test(s)) return {row:39};
+    if (BORROW.test(s)) return {row: section==='cl' ? 41 : 43};
+    if (section==='cl') return {row:40};
+    if (section==='ncl') return {row:45};
+    return {row:null, why:'Choose current or non-current'};
+  }
+  return {row:null, why:'No section heading found – choose a row'};
+}
+
+function mapTax(label){
+  const s = label.toLowerCase();
+  if (/franking credit|tax withheld|tax offset|\bpayg\b.*(withheld|instal)/.test(s)) return {row:null, skip:true, why:'Credit/offset – not income'};
+  if (/^total|total (income|deductions)|^deductions|work[- ]related|gifts|donations|self[- ]education|cost of managing/.test(s)) return {row:null, skip:true, why:'Total or deduction – not used'};
+  if (/tax payable|tax on taxable income|net tax|medicare levy|total tax/.test(s) && !/surcharge exemption/.test(s)) return {row:21};
+  if (/taxable income/.test(s)) return {row:20};
+  if (/capital works/.test(s)) return {row:16};
+  if (/(rental|rent).*interest|interest.*(deduct|rental|investment property)/.test(s)) return {row:15};
+  if (/(other )?rental deduction|rental expense/.test(s)) return {row:17};
+  if (/gross rent|rental income|^rent\b|rent received/.test(s)) return {row:14};
+  if (/salary|wages/.test(s) && !/allowance/.test(s)) return {row:7};
+  if (/allowance|earnings|tips|director.?s? fees?|commissions?/.test(s)) return {row:8};
+  if (/distribution|partnership|trust income|share of net income/.test(s)) return {row:11};
+  if (/business income|income or loss from business|net (income|loss) from business|sole trader|^p8\b|net business/.test(s)) return {row:13};
+  if (/dividend/.test(s)) return {row:10};
+  if (/interest/.test(s)) return {row:9};
+  if (/capital gain/.test(s)) return {row:null, why:'Capital gain – usually excluded; choose Other income to include'};
+  if (/foreign|annuit|pension|other income|employment termination|bonus/.test(s)) return {row:19};
+  return {row:null, why:'Not recognised – choose a row'};
+}
+
+function guessStatement(rows){
+  const text = rows.map(r=>String(r.cells[0]||'').toLowerCase()).join(' | ');
+  const score = (re)=> (text.match(re)||[]).length;
+  const bs = score(/current assets|current liabilities|total assets|total liabilities|net assets|equity|debtors|creditors|receivable|payable/g);
+  const pl = score(/revenue|sales|income|expenses|cost of sales|gross profit|net profit|depreciation|wages/g);
+  const tx = score(/salary or wages|taxable income|item \d|allowances|franking|medicare|gross rent|tax payable/g);
+  if (tx >= 2 && tx >= bs) return 'tax';
+  return bs > pl ? 'bs' : 'pl';
+}
+
+// rows: [{cells:[label,...], type}] ; returns [{row, neg, skip, why, auto}]
+function autoMap(rows, kind){
+  let section = null; let npbtFound = false;
+  return rows.map(r=>{
+    const label = String(r.cells[0]||'').trim();
+    const vals = r.cells.slice(1).map(v=>String(v||'').trim()).filter(Boolean);
+    const hasVals = vals.length > 0;
+    if (hasVals && vals.every(v=>/^(FY|CY)?(19|20)\d{2}$/i.test(v))) return {row:null, skip:true, why:'Heading'};
+    if (kind!=='tax'){
+      const sec = kind==='pl' ? plSection(label) : bsSection(label);
+      if (sec && (!hasVals || r.type==='heading')) { section = sec; return {row:null, skip:true, why:'Heading'}; }
+      if (!hasVals) return {row:null, skip:true, why:'No figures'};
+      if (kind==='pl' && RX.npbt.test(label) && !RX.after.test(label) && !npbtFound){ npbtFound = true; return {row:17, why:'Used to check nothing was missed'}; }
+      if (RX.total.test(label) || r.type==='total' || /^total\b/i.test(label)) {
+        if (kind==='bs' && sec) section = sec;
+        return {row:null, skip:true, why:'Total – skipped so nothing is counted twice'};
+      }
+      if (sec) section = sec;
+      return kind==='pl' ? mapPL(label, section) : mapBS(label, section);
+    }
+    if (!hasVals) return {row:null, skip:true, why:'No figures'};
+    return mapTax(label);
+  });
+}
+
+// Which FY column (0..2) each snipped value column goes to; -1 = skip.
+function hintYear(rows){
+  for (const r of rows.slice(0,6)){ const m = r.cells.join(' ').match(/(?:FY|year ended[^0-9]*|30 june |june )?((19|20)\d{2})/i); if (m) return m[1]; }
+  return null;
+}
+function guessYears(cols, fyLabels, rows){
+  const hint = rows ? hintYear(rows) : null;
+  if (hint && cols.length === 2 && !/(19|20)\d{2}/.test(String(cols[1]))) cols = [cols[0], hint];
+  const fyYears = fyLabels.map(l=>{ const m = String(l).match(/(19|20)\d{2}/); if (m) return m[0]; const m2 = String(l).match(/\d{2}$/); return m2 ? '20'+m2[0] : null; });
+  const out = []; const used = new Set(); let order = [2,1,0];
+  cols.slice(1).forEach((h,i)=>{
+    const t = String(h||'');
+    if (/^note/i.test(t)) { out.push(-1); return; }
+    let m = t.match(/(19|20)\d{2}/); let y = m ? m[0] : null;
+    if (!y){ const m2 = t.match(/^(FY|CY|YE)?\s*['’]?(\d{2})$/i); if (m2) y = '20'+m2[2]; }
+    const idx = y ? fyYears.indexOf(y) : -1;
+    if (idx >= 0 && !used.has(idx)){ out.push(idx); used.add(idx); return; }
+    out.push(null);
+  });
+  // fill unknowns in order latest → oldest (statements usually show current year first)
+  for (let i=0;i<out.length;i++){
+    if (out[i]===null){ const nx = order.find(k=>!used.has(k)); if (nx===undefined) out[i]=-1; else { out[i]=nx; used.add(nx); } }
+  }
+  return out;
+}
+
+// Combine mapped rows into {targetRow: [fy0, fy1, fy2]} applying sign rules.
+function aggregate(rows, maps, yearCols, toNum){
+  const vals = {}; // row -> [a,b,c]
+  const add = (row, fy, v)=>{ if (!vals[row]) vals[row] = [null,null,null]; vals[row][fy] = (vals[row][fy]||0) + v; };
+  // detect negative convention for costs / liabilities
+  let negCost = 0, posCost = 0;
+  rows.forEach((r,i)=>{ const m = maps[i]; if (!m || m.row==null || !(COST_ROWS.has(m.row) || LIAB_ROWS.has(m.row)) || m.neg) return;
+    r.cells.slice(1).forEach((c,j)=>{ if (yearCols[j] < 0) return; const n = toNum(c); if (n==null) return; if (n<0) negCost++; else if (n>0) posCost++; }); });
+  const flipCost = negCost > posCost;
+  rows.forEach((r,i)=>{
+    const m = maps[i]; if (!m || m.row==null) return;
+    r.cells.slice(1).forEach((c,j)=>{
+      const fy = yearCols[j]; if (fy==null || fy<0) return;
+      let n = toNum(c); if (n==null) return;
+      if (flipCost && (COST_ROWS.has(m.row) || LIAB_ROWS.has(m.row))) n = -n;
+      if (m.neg) n = -Math.abs(n);
+      add(m.row, fy, n);
+    });
+  });
+  return vals;
+}
+// MAPPER-END
+
 const $ = s => document.querySelector(s);
 const state = {img:null, sel:null, vscale:1, sheets:[], cur:-1, worker:null, inExcel:false, armed:null};
+const SV = {ready:false, all:[], parties:[], fy:['FY1','FY2','FY3']};
 const TYPE_ICON = {line:'·', total:'Σ', heading:'H'};
 const TYPE_NEXT = {line:'total', total:'heading', heading:'line'};
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const cur = () => state.sheets[state.cur];
+const fmtNum = v => v==null ? '' : (v<0 ? '('+Math.abs(Math.round(v)).toLocaleString('en-AU')+')' : Math.round(v).toLocaleString('en-AU'));
+const num = s => { const r = toNumber(s, $('#brackets').checked); return r.v==null ? null : r.v; };
 
 let toastT;
-function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 4500); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 5000); }
 function setProgress(p, text){ $('#prog').hidden=false; $('#progBar').style.width=Math.round(clamp(p,0,1)*100)+'%'; if (text) $('#progText').textContent=text; }
 function hideProgress(){ $('#prog').hidden=true; }
-// Office task panes don't support confirm(), so destructive actions need a second click.
 function armed(key){ if (state.armed && state.armed.key===key && Date.now()-state.armed.t < 6000){ state.armed=null; return true; } state.armed={key, t:Date.now()}; return false; }
 
 /* ---------- Office ---------- */
-if (window.Office) Office.onReady(info=>{ state.inExcel = info.host === Office.HostType.Excel; $('#envNote').hidden = state.inExcel; updateButtons(); });
+if (window.Office) Office.onReady(info=>{ state.inExcel = info.host === Office.HostType.Excel; $('#envNote').hidden = state.inExcel; updateButtons(); svDetect(); });
 else $('#envNote').hidden = false;
 
 /* ---------- capture ---------- */
 const view = $('#view'), vctx = view.getContext('2d'), stage = $('#stage');
-
 function setImage(src){
   const c = document.createElement('canvas');
   c.width = src.naturalWidth || src.width; c.height = src.naturalHeight || src.height;
@@ -338,9 +612,9 @@ function drawView(){
   vctx.drawImage(img, 0, 0, view.width, view.height);
   if (state.sel){
     const {x,y,w,h} = state.sel, s = scale;
-    vctx.fillStyle = 'rgba(15,23,42,.45)';
+    vctx.fillStyle = 'rgba(13,27,55,.45)';
     vctx.beginPath(); vctx.rect(0,0,view.width,view.height); vctx.rect(x*s,y*s,w*s,h*s); vctx.fill('evenodd');
-    vctx.strokeStyle = '#107c41'; vctx.lineWidth = 2; vctx.strokeRect(x*s+1, y*s+1, Math.max(0,w*s-2), Math.max(0,h*s-2));
+    vctx.strokeStyle = '#173a53'; vctx.lineWidth = 2; vctx.strokeRect(x*s+1, y*s+1, Math.max(0,w*s-2), Math.max(0,h*s-2));
   }
 }
 function updateSelHint(){ $('#selHint').textContent = state.sel ? 'Reading the box only. Click once to clear.' : 'Drag a box to read part of it.'; }
@@ -354,7 +628,6 @@ view.addEventListener('pointermove', e=>{ if (!drag) return; const p = toSrc(e);
 view.addEventListener('pointerup', ()=>{ if (!drag) return; drag = null; if (state.sel && (state.sel.w<12 || state.sel.h<12)) state.sel = null; drawView(); updateSelHint(); });
 window.addEventListener('resize', drawView);
 stage.addEventListener('click', ()=>stage.focus());
-
 $('#file').addEventListener('change', e=>{ const f = e.target.files[0]; if (f) loadBlob(f); e.target.value=''; });
 ['dragenter','dragover'].forEach(ev=>stage.addEventListener(ev, e=>{ e.preventDefault(); stage.classList.add('drag'); }));
 ['dragleave','drop'].forEach(ev=>stage.addEventListener(ev, e=>{ e.preventDefault(); stage.classList.remove('drag'); }));
@@ -432,10 +705,11 @@ function addResult(res){
     const n = Math.max(s.cols.length, res.cols.length);
     while (s.cols.length < n){ s.cols.push(res.cols[s.cols.length] || 'Col '+s.cols.length); s.rows.forEach(r=>{ r.cells.push(''); r.low.push(false); }); }
     res.rows.forEach(r=>{ while (r.cells.length < n){ r.cells.push(''); r.low.push(false); } s.rows.push(r); });
+    s.sv = null;
   } else {
     const base = guessName(res.rows); let name = base, k = 2;
     while (state.sheets.some(x=>x.name===name)) name = base+' '+(k++);
-    state.sheets.push({name, cols:res.cols, rows:res.rows}); state.cur = state.sheets.length-1;
+    state.sheets.push({name, cols:res.cols, rows:res.rows, sv:null}); state.cur = state.sheets.length-1;
   }
   render();
 }
@@ -445,7 +719,7 @@ function render(){
   const sh = cur(), has = !!sh;
   ['#sheetbar','#tablewrap','#tblTools','#legend'].forEach(q=>$(q).hidden = !has); $('#tblEmpty').hidden = has;
   updateButtons();
-  if (!has){ $('#tbl').innerHTML=''; $('#summary').textContent=''; updateWarn(); return; }
+  if (!has){ $('#tbl').innerHTML=''; $('#summary').textContent=''; updateWarn(); svRenderSend(); return; }
   $('#sheetName').value = sh.name;
   const n = sh.cols.length;
   let h = '<thead><tr><th class="tcol"></th>';
@@ -458,6 +732,7 @@ function render(){
   });
   $('#tbl').innerHTML = h + '</tbody>';
   updateSummary();
+  svRenderSend();
 }
 function updateSummary(){
   const sh = cur(); if (!sh) return;
@@ -476,9 +751,11 @@ function updateWarn(){
   else w.hidden = true;
 }
 const tbl = $('#tbl');
+let svT;
+function svSoon(){ clearTimeout(svT); svT = setTimeout(svRenderTotals, 300); }
 tbl.addEventListener('input', e=>{
   const sh = cur(), td = e.target.closest('td[data-r]');
-  if (td){ const r = sh.rows[+td.dataset.r], c = +td.dataset.c; r.cells[c] = td.textContent; if (r.low[c]){ r.low[c]=false; td.classList.remove('low'); updateSummary(); } return; }
+  if (td){ const r = sh.rows[+td.dataset.r], c = +td.dataset.c; r.cells[c] = td.textContent; if (r.low[c]){ r.low[c]=false; td.classList.remove('low'); updateSummary(); } svSoon(); return; }
   const hc = e.target.closest('[data-hc]'); if (hc) sh.cols[+hc.dataset.hc] = hc.textContent;
 });
 tbl.addEventListener('keydown', e=>{
@@ -489,13 +766,13 @@ tbl.addEventListener('keydown', e=>{
   const next = tbl.querySelector(`td[data-r="${+td.dataset.r+1}"][data-c="${c}"]`);
   if (next){ next.focus(); const sel = getSelection(); sel.selectAllChildren(next); sel.collapseToEnd(); } else td.blur();
 });
-tbl.addEventListener('focusout', e=>{ if (e.target.closest('[data-hc]') || e.target.closest('td.lbl')) updateWarn(); });
+tbl.addEventListener('focusout', e=>{ if (e.target.closest('[data-hc]') || e.target.closest('td.lbl')) updateWarn(); if (e.target.closest('td.lbl')) { const sh=cur(); if (sh) { sh.sv = null; svRenderSend(); } } });
 tbl.addEventListener('click', e=>{
   const sh = cur(), b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.delcol){ const i = +b.dataset.delcol; sh.cols.splice(i,1); sh.rows.forEach(r=>{ r.cells.splice(i,1); r.low.splice(i,1); }); render(); }
-  else if (b.dataset.delrow){ sh.rows.splice(+b.dataset.delrow,1); render(); }
-  else if (b.dataset.insrow){ const n = sh.cols.length; sh.rows.splice(+b.dataset.insrow+1, 0, {cells:Array(n).fill(''), low:Array(n).fill(false), type:'line'}); render(); }
-  else if (b.dataset.type){ const r = sh.rows[+b.dataset.type]; r.type = TYPE_NEXT[r.type]; render(); }
+  if (b.dataset.delcol){ const i = +b.dataset.delcol; sh.cols.splice(i,1); sh.rows.forEach(r=>{ r.cells.splice(i,1); r.low.splice(i,1); }); sh.sv = null; render(); }
+  else if (b.dataset.delrow){ sh.rows.splice(+b.dataset.delrow,1); sh.sv = null; render(); }
+  else if (b.dataset.insrow){ const n = sh.cols.length; sh.rows.splice(+b.dataset.insrow+1, 0, {cells:Array(n).fill(''), low:Array(n).fill(false), type:'line'}); sh.sv = null; render(); }
+  else if (b.dataset.type){ const r = sh.rows[+b.dataset.type]; r.type = TYPE_NEXT[r.type]; sh.sv = null; render(); }
 });
 $('#tabs').addEventListener('click', e=>{ const t = e.target.closest('[data-tab]'); if (t){ state.cur = +t.dataset.tab; render(); } });
 $('#sheetName').addEventListener('input', e=>{ const s = cur(); if (s){ s.name = e.target.value; const on = $('#tabs .tab.on'); if (on) on.textContent = s.name || ' '; } });
@@ -504,10 +781,214 @@ $('#delSheet').addEventListener('click', ()=>{
   if (!armed('del')){ toast('Click Delete again to remove this table.'); return; }
   state.sheets.splice(state.cur,1); state.cur = Math.min(state.cur, state.sheets.length-1); render();
 });
-$('#addRow').addEventListener('click', ()=>{ const s = cur(), n = s.cols.length; s.rows.push({cells:Array(n).fill(''), low:Array(n).fill(false), type:'line'}); render(); tbl.querySelector('tbody tr:last-child td.lbl').focus(); });
-$('#addCol').addEventListener('click', ()=>{ const s = cur(); s.cols.push('Col '+s.cols.length); s.rows.forEach(r=>{ r.cells.push(''); r.low.push(false); }); render(); });
+$('#addRow').addEventListener('click', ()=>{ const s = cur(), n = s.cols.length; s.rows.push({cells:Array(n).fill(''), low:Array(n).fill(false), type:'line'}); s.sv = null; render(); tbl.querySelector('tbody tr:last-child td.lbl').focus(); });
+$('#addCol').addEventListener('click', ()=>{ const s = cur(); s.cols.push('Col '+s.cols.length); s.rows.forEach(r=>{ r.cells.push(''); r.low.push(false); }); s.sv = null; render(); });
 
-/* ---------- anonymise & insert ---------- */
+/* ---------- servicing workbook ---------- */
+async function svDetect(){
+  if (!state.inExcel) return;
+  try{
+    await Excel.run(async ctx=>{
+      const s = ctx.workbook.worksheets.getItemOrNullObject('Structure');
+      const t = ctx.workbook.worksheets.getItemOrNullObject('Entity template');
+      await ctx.sync();
+      SV.ready = !s.isNullObject && !t.isNullObject;
+    });
+  }catch(e){ SV.ready = false; }
+  $('#svCard').hidden = !SV.ready;
+  if (SV.ready && !SV.listening && Office.context.requirements.isSetSupported('ExcelApi','1.7')){
+    SV.listening = true;
+    try{ await Excel.run(async ctx=>{ ctx.workbook.worksheets.onActivated.add(()=>svRefresh()); await ctx.sync(); }); }catch(e){}
+  }
+  if (SV.ready) await svRefresh(); else svRenderSend();
+}
+async function svRefresh(){
+  if (!SV.ready) return;
+  try{
+    await Excel.run(async ctx=>{
+      const f = LAYOUT.structFirst, l = f + LAYOUT.n - 1;
+      const st = ctx.workbook.worksheets.getItem('Structure').getRange(`B${f}:K${l}`); st.load('values');
+      const fy = ctx.workbook.worksheets.getItem('Assumptions').getRange('B6:B8'); fy.load('values');
+      const wsc = ctx.workbook.worksheets; wsc.load('items/name');
+      await ctx.sync();
+      const names = new Set(wsc.items.map(w=>w.name.toLowerCase()));
+      SV.fy = fy.values.map(r=>String(r[0]||''));
+      SV.all = st.values.map((r,i)=>({i, label:String(r[0]||'').trim(), type:String(r[1]||''), include:String(r[5]||''), tab:String(r[7]||'').trim(), tpl:String(r[8]||''),
+        built: !!String(r[7]||'').trim() && names.has(String(r[7]).trim().toLowerCase())}));
+      SV.parties = SV.all.filter(p=>p.label);
+    });
+  }catch(e){ console.error(e); $('#svMsg').textContent = 'Could not read the Structure tab: '+(e.message||e); return; }
+  const list = SV.parties.map(p=>`<div><span>${esc(p.label)} <span class="muted">· ${p.tpl==='Person'?'tax return':'financials'}</span></span><span class="${p.built?'b':'nb'}">${p.built?'Built':'Not built'}</span></div>`).join('');
+  $('#svParties').innerHTML = list || '<span class="muted">No parties on the Structure tab yet.</span>';
+  const todo = SV.parties.filter(p=>!p.built).length;
+  $('#svBuild').textContent = todo ? `Build ${todo} tab${todo>1?'s':''} from Structure` : 'Tabs up to date';
+  $('#svBuild').disabled = !todo;
+  svRenderSend();
+}
+$('#svRefresh').addEventListener('click', svRefresh);
+
+$('#svBuild').addEventListener('click', async ()=>{
+  if (!Office.context.requirements.isSetSupported('ExcelApi','1.7')){ toast('This Excel version cannot copy sheets from an add-in. Copy the template tabs by hand (see the Guide tab).'); return; }
+  await svRefresh();
+  const btn = $('#svBuild'); btn.disabled = true;
+  const problems = [], made = [];
+  try{
+    await Excel.run(async ctx=>{
+      const sheets = ctx.workbook.worksheets; sheets.load('items/name'); await ctx.sync();
+      const existing = new Set(sheets.items.map(s=>s.name.toLowerCase()));
+      const system = new Set(LAYOUT.systemSheets.map(s=>s.toLowerCase()));
+      const seen = new Set(), wanted = new Set();
+      const liab = sheets.getItem('Liabilities');
+      for (const p of SV.parties){
+        const key = p.tab.toLowerCase();
+        if (!p.tab){ problems.push(`${p.label}: no tab name`); continue; }
+        if (seen.has(key)){ problems.push(`"${p.label}" gives the same tab name as another party. Make the labels different.`); continue; }
+        seen.add(key); wanted.add(key);
+        if (system.has(key)){ problems.push(`"${p.label}" clashes with a built-in tab. Rename the label.`); continue; }
+        if (existing.has(key)) continue;
+        const tpl = sheets.getItem(p.tpl === 'Person' ? 'Person template' : 'Entity template');
+        tpl.visibility = 'Visible';
+        const copy = tpl.copy('Before', liab);
+        copy.name = p.tab;
+        copy.getRange('A2').values = [[p.label]];
+        tpl.visibility = 'Hidden';
+        await ctx.sync();
+        made.push(p.label);
+      }
+      // hide unused rows on Servicing
+      const sv = sheets.getItem('Servicing');
+      SV.all.forEach((p,i)=>{
+        const r = LAYOUT.servFirst + i;
+        sv.getRange(`${r}:${r}`).rowHidden = !p.label;
+        const top = LAYOUT.imFirst + i*LAYOUT.imBlock;
+        sv.getRange(`${top}:${top+LAYOUT.imBlock-1}`).rowHidden = !(p.label && p.tpl === 'Entity');
+      });
+      await ctx.sync();
+      const orphans = sheets.items.map(s=>s.name).filter(n=>!system.has(n.toLowerCase()) && !wanted.has(n.toLowerCase()));
+      if (orphans.length) problems.push(`Not on the Structure tab any more: ${orphans.join(', ')}. Delete ${orphans.length>1?'these tabs':'this tab'} yourself if not needed.`);
+    });
+    $('#svMsg').innerHTML = (made.length ? `<div class="okmsg">Built: ${made.map(esc).join(', ')}. Unused rows on the Servicing tab are hidden.</div>` : '<div class="okmsg">Tabs are up to date. Unused rows on the Servicing tab are hidden.</div>')
+      + (problems.length ? `<div class="warn" style="margin-top:6px">${problems.map(esc).join('<br>')}</div>` : '');
+  }catch(e){ console.error(e); $('#svMsg').innerHTML = `<div class="warn">Could not build tabs: ${esc(e.message||e)}</div>`; }
+  await svRefresh();
+});
+
+function svTargets(kind){ return TARGETS[kind] || []; }
+function svEnsure(sh, partyIdx){
+  if (!sh.sv){
+    const guess = guessStatement(sh.rows), built = SV.parties.filter(x=>x.built);
+    const p = built.find(x=>x.i===partyIdx) || built.find(x=>(guess==='tax') === (x.tpl==='Person')) || built[0];
+    const kind = p && p.tpl === 'Person' ? 'tax' : (guess === 'tax' ? 'pl' : guess);
+    sh.sv = {party: p ? p.i : null, kind, maps: null, years: guessYears(sh.cols, SV.fy, sh.rows)};
+  }
+  if (!sh.sv.maps || sh.sv.maps.length !== sh.rows.length) sh.sv.maps = autoMap(sh.rows, sh.sv.kind);
+  if (sh.sv.years.length !== sh.cols.length-1) sh.sv.years = guessYears(sh.cols, SV.fy, sh.rows);
+  return sh.sv;
+}
+function svRenderSend(){
+  const sh = cur();
+  const show = SV.ready && state.inExcel && !!sh;
+  $('#sendCard').hidden = !show;
+  if (!show) return;
+  const built = SV.parties.filter(p=>p.built);
+  if (!built.length){
+    $('#svParty').innerHTML = '<option value="">Build tabs first</option>'; $('#svWrite').disabled = true;
+    $('#svMap').innerHTML = ''; $('#svTotals').innerHTML = ''; $('#svYears').innerHTML = ''; return;
+  }
+  const sv = svEnsure(sh, sh.sv ? sh.sv.party : null);
+  if (!built.some(p=>p.i===sv.party)) sv.party = built[0].i;
+  const party = built.find(p=>p.i===sv.party);
+  $('#svParty').innerHTML = built.map(p=>`<option value="${p.i}"${p.i===sv.party?' selected':''}>${esc(p.label)}</option>`).join('');
+  const kinds = party.tpl === 'Person' ? ['tax'] : ['pl','bs'];
+  if (!kinds.includes(sv.kind)){ sv.kind = kinds[0]; sv.maps = autoMap(sh.rows, sv.kind); }
+  [...$('#svKind').options].forEach(o=>{ o.disabled = !kinds.includes(o.value); o.selected = o.value === sv.kind; });
+  // year selectors
+  let yh = '';
+  sh.cols.slice(1).forEach((c,j)=>{
+    yh += `<span>${esc(c||'Column '+(j+1))} →</span><select data-yc="${j}"><option value="-1">Skip</option>${SV.fy.map((f,k)=>`<option value="${k}"${sv.years[j]===k?' selected':''}>${esc(f)}</option>`).join('')}</select>`;
+  });
+  $('#svYears').innerHTML = yh;
+  // mapping table
+  const opts = svTargets(sv.kind);
+  const firstCol = sv.years.findIndex(y=>y>=0);
+  let mh = '';
+  sh.rows.forEach((r,i)=>{
+    const m = sv.maps[i] || {row:null};
+    const val = firstCol >= 0 ? num(r.cells[firstCol+1]) : null;
+    const need = m.row == null && !m.skip && r.cells.slice(1).some(v=>String(v||'').trim());
+    mh += `<tr class="${m.row==null?(need?'need':'skip'):''}" title="${esc(m.why||'')}"><td class="lab">${esc(r.cells[0]||'(no label)')}${m.neg?' <span class="muted">(subtracted)</span>':''}</td><td class="val">${fmtNum(val)}</td><td><select data-map="${i}"><option value="">${need?'Choose…':'— Skip —'}</option>${opts.map(([row,name])=>`<option value="${row}"${m.row===row?' selected':''}>${esc(name)}</option>`).join('')}</select></td></tr>`;
+  });
+  $('#svMap').innerHTML = mh;
+  $('#svWrite').disabled = false;
+  svRenderTotals();
+}
+function svRenderTotals(){
+  const sh = cur(); if (!sh || !sh.sv || $('#sendCard').hidden) return;
+  const sv = sh.sv;
+  const agg = aggregate(sh.rows, sv.maps, sv.years, num);
+  const names = Object.fromEntries(svTargets(sv.kind));
+  const yrs = [0,1,2].filter(k=>sv.years.includes(k));
+  const rows = Object.keys(agg).map(Number).sort((a,b)=>a-b);
+  if (!rows.length){ $('#svTotals').innerHTML = '<div><span class="muted">Nothing matched yet.</span><span></span></div>'; return; }
+  let h = `<div><strong>Will write</strong><span><strong>${yrs.map(k=>esc(SV.fy[k])).join(' · ')}</strong></span></div>`;
+  rows.forEach(r=>{ h += `<div><span>${esc(names[r]||('Row '+r))}</span><span>${yrs.map(k=>fmtNum(agg[r][k])).join(' · ')}</span></div>`; });
+  if (sv.kind === 'pl' && agg[17]){
+    const calc = k => ['7','10'].reduce((a,r)=>a+(agg[r]&&agg[r][k]||0),0) - ['8','11','13','15'].reduce((a,r)=>a+(agg[r]&&agg[r][k]||0),0);
+    const diffs = yrs.map(k=> agg[17][k]==null ? null : Math.round(calc(k) - agg[17][k]));
+    const ok = diffs.every(d=>d==null || Math.abs(d) < 2);
+    h += `<div><span>${ok?'✓ Reconciles to reported profit':'⚠ Differs from reported profit'}</span><span>${diffs.map(d=>d==null?'':fmtNum(d)).join(' · ')}</span></div>`;
+  }
+  $('#svTotals').innerHTML = h;
+}
+$('#svParty').addEventListener('change', e=>{ const sh = cur(); if (!sh) return; const p = SV.parties.find(x=>x.i===+e.target.value); sh.sv.party = +e.target.value;
+  if (p && p.tpl === 'Person' && sh.sv.kind !== 'tax'){ sh.sv.kind = 'tax'; sh.sv.maps = null; }
+  if (p && p.tpl !== 'Person' && sh.sv.kind === 'tax'){ sh.sv.kind = guessStatement(sh.rows) === 'bs' ? 'bs' : 'pl'; sh.sv.maps = null; }
+  svRenderSend(); });
+$('#svKind').addEventListener('change', e=>{ const sh = cur(); if (!sh) return; sh.sv.kind = e.target.value; sh.sv.maps = null; svRenderSend(); });
+$('#svYears').addEventListener('change', e=>{ const s = e.target.closest('[data-yc]'); if (!s) return; const sh = cur(); sh.sv.years[+s.dataset.yc] = +s.value; svRenderSend(); });
+$('#svMap').addEventListener('change', e=>{ const s = e.target.closest('[data-map]'); if (!s) return; const sh = cur(); const i = +s.dataset.map;
+  sh.sv.maps[i] = s.value ? {row:+s.value, neg: (sh.sv.maps[i]||{}).row === +s.value ? (sh.sv.maps[i]||{}).neg : false, manual:true} : {row:null, skip:true, manual:true}; svRenderSend(); });
+
+$('#svWrite').addEventListener('click', async ()=>{
+  const sh = cur(); if (!sh || !sh.sv) return;
+  const sv = sh.sv, party = SV.parties.find(p=>p.i===sv.party);
+  if (!party || !party.built){ toast('Build the tab for this party first.'); return; }
+  const unanswered = sh.rows.filter((r,i)=>{ const m = sv.maps[i]; return m && m.row==null && !m.skip && r.cells.slice(1).some(v=>String(v||'').trim()); }).length;
+  if (unanswered && !armed('unmapped')){ toast(`${unanswered} line${unanswered>1?'s are':' is'} not matched (highlighted). Choose a row, or click Write again to skip ${unanswered>1?'them':'it'}.`); return; }
+  const agg = aggregate(sh.rows, sv.maps, sv.years, num);
+  const add = $('#svAdd').checked;
+  const btn = $('#svWrite'); btn.disabled = true;
+  try{
+    await Excel.run(async ctx=>{
+      const ws = ctx.workbook.worksheets.getItemOrNullObject(party.tab); await ctx.sync();
+      if (ws.isNullObject) throw new Error('Tab "'+party.tab+'" not found. Click Refresh, then Build tabs.');
+      const area = ws.getRange('B7:D45'); area.load('values'); await ctx.sync();
+      let n = 0;
+      for (const [rowS, arr] of Object.entries(agg)){
+        const row = +rowS;
+        arr.forEach((v,fy)=>{
+          if (v == null) return;
+          let nv = Math.round(v*100)/100;
+          if (add){ const ex = area.values[row-7][fy]; if (typeof ex === 'number') nv += ex; }
+          ws.getRange('BCD'[fy] + row).values = [[nv]]; n++;
+        });
+      }
+      ws.activate();
+      const chk = ws.getRange('B18:D18'); chk.load('values');
+      await ctx.sync();
+      let msg = `<div class="okmsg">Wrote ${n} figure${n===1?'':'s'} to ${esc(party.label)} (${esc(sv.kind==='pl'?'profit & loss':sv.kind==='bs'?'balance sheet':'tax return')}).</div>`;
+      if (sv.kind === 'pl' && party.tpl !== 'Person'){
+        const yrs = [0,1,2].filter(k=>sv.years.includes(k));
+        const bad = yrs.filter(k=>{ const v = chk.values[0][k]; return typeof v === 'number' && Math.abs(v) >= 1; });
+        if (bad.length) msg += `<div class="warn" style="margin-top:6px">Check line on the tab doesn't reconcile for ${bad.map(k=>esc(SV.fy[k])).join(', ')}. A line may be missing or matched to the wrong row.</div>`;
+      }
+      $('#svResult').innerHTML = msg;
+    });
+  }catch(e){ console.error(e); $('#svResult').innerHTML = `<div class="warn">${esc(e.message||e)}</div>`; }
+  finally{ btn.disabled = false; }
+});
+
+/* ---------- plain insert ---------- */
 function redactor(){
   const terms = $('#redact').value.split(/\n/).map(s=>s.trim()).filter(s=>s.length>1).sort((a,b)=>b.length-a.length);
   if (!terms.length) return s=>s;
@@ -515,8 +996,7 @@ function redactor(){
   return s => typeof s === 'string' ? s.replace(re, '[Client]') : s;
 }
 $('#redact').addEventListener('input', updateWarn);
-
-// Build the grid of values plus a matching grid of number formats.
+$('#brackets').addEventListener('change', ()=>svRenderSend());
 function buildGrid(sh){
   const red = redactor(), bneg = $('#brackets').checked, withType = $('#typeCol').checked, withHdr = $('#headers').checked;
   const values = [], formats = [], kinds = [];
@@ -526,7 +1006,7 @@ function buildGrid(sh){
   for (const r of sh.rows){
     const v = [red(r.cells[0]||'')], f = [v[0] ? '@' : 'General'];
     for (let c=1;c<sh.cols.length;c++){
-      const raw = r.cells[c], p = toNumber(raw, bneg);
+      const p = toNumber(r.cells[c], bneg);
       if (p.v != null){ v.push(p.v); f.push(p.pct ? '0.0%' : (Number.isInteger(p.v) ? '#,##0;(#,##0);"-"' : '#,##0.00;(#,##0.00);"-"')); }
       else if (p.text != null){ v.push(red(p.text)); f.push('@'); }
       else { v.push(''); f.push('General'); }
@@ -538,7 +1018,6 @@ function buildGrid(sh){
   return {values, formats, kinds, width};
 }
 function safeSheetName(name){ return String(name||'Sheet').replace(/[\[\]:*?\/\\']/g,' ').trim().slice(0,31) || 'Sheet'; }
-
 async function insert(mode){
   const sh = cur(); if (!sh || !state.inExcel) return;
   const {values, formats, kinds, width} = buildGrid(sh);
